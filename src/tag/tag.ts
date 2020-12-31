@@ -27,7 +27,7 @@ class TAG {
 
     public update(){
         // difference check
-        // holes를 비교        
+        // holes와 expressions를 서로 비교        
             // attr은 그냥 바꿔주면 되고 
             // element가 같으면 값만 교체
             // element가 다르면 기존꺼 제거 하고 새로 갈아치우기
@@ -77,16 +77,17 @@ class TAG {
             return;
         };  
         
-        if(tag instanceof HTMLScriptElement){            
-            var s = document.createElement( 'script' );
-            const ct = document.createTextNode(tag.text)    
-            if(tag.src) s.setAttribute("src", tag.src);
-            if(tag.type) s.setAttribute("type", tag.type);
-            if(tag.async) s.setAttribute("async", tag.async.toString());                        
-            s.appendChild(ct);       
-            tag.parentNode.insertBefore(s, tag);
-            this.holes.push(s)
-            tag.remove();            
+        if(tag instanceof HTMLScriptElement){    
+            console.warn("script tag is not executable!")        
+            // var s = document.createElement( 'script' );
+            // const ct = document.createTextNode(tag.text)    
+            // if(tag.src) s.setAttribute("src", tag.src);
+            // if(tag.type) s.setAttribute("type", tag.type);
+            // if(tag.async) s.setAttribute("async", tag.async.toString());                        
+            // s.appendChild(ct);       
+            // tag.parentNode.insertBefore(s, tag);
+            // this.holes.push(s)
+            // tag.remove();            
             return;            
         }
         

@@ -1,3 +1,3 @@
-import tag from './tag/tag'
-
-export default {tag}
+import {tag} from './tag/tag'
+import reader from './reader/reader'
+export default {tag, reader}

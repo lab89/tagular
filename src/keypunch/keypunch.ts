@@ -1,7 +1,10 @@
 
 
-function puncher(UID: string, strings: TemplateStringsArray, ...expr: any[]): string{
+function keypunch(UID: string, strings: string[]): string{
     const UIDC = '<!--' + UID + '-->'
+
+
+    const SHOULD_USE_TEXT_CONTENT = /^(?:style|textarea)$/i;
 
     const VOID_ELEMENTS = /^(?:area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)$/i;
     const spaces = ' \\f\\n\\r\\t';
@@ -24,9 +27,8 @@ function puncher(UID: string, strings: TemplateStringsArray, ...expr: any[]): st
     function fullClosing($0: string, $1: string, $2: string) {
         return VOID_ELEMENTS.test($1) ? $0 : '<' + $1 + $2 + '></' + $1 + '>';
     }
-
     const templateString = strings.join(UIDC).replace(selfClosing, fullClosing).replace(attrSeeker, attrReplacer); 
 
     return templateString
 }
-export default puncher
+export default keypunch

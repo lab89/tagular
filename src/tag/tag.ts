@@ -100,21 +100,23 @@ class TAG {
                             target : currentAttr
                         })                    
                     }else if(currentAttr.value.includes("<!--")){                                                            
-                        const l = (currentAttr.value.match(new RegExp("<!--" + this.id + "-->", "g")) || []).length                                        
-                        let st = currentAttr.value             
-                        let splited;                                         
-                        splited = currentAttr.value.split(";").map((d: string)=> d.split(":")[0].trim())                        
-                        for(let i = 0 ; i < l; i++){ 
-                            const v = this.punchingHole.shift();
-                            st = st.replace("<!--" + this.id + "-->", v)   
-                            expr.push({
-                                type: "attribute",
-                                name: currentAttr.name + "." + splited[i],
-                                value : v,
-                                target : currentAttr
-                            })                       
-                        }                    
-                        currentAttr.value = st;
+                        console.error("invalid attribute")
+                        return;
+                        // const l = (currentAttr.value.match(new RegExp("<!--" + this.id + "-->", "g")) || []).length                                        
+                        // let st = currentAttr.value             
+                        // let splited;                                         
+                        // splited = currentAttr.value.split(";").map((d: string)=> d.split(":")[0].trim())                        
+                        // for(let i = 0 ; i < l; i++){ 
+                        //     const v = this.punchingHole.shift();
+                        //     st = st.replace("<!--" + this.id + "-->", v)   
+                        //     expr.push({
+                        //         type: "attribute",
+                        //         name: currentAttr.name + "." + splited[i],
+                        //         value : v,
+                        //         target : currentAttr
+                        //     })                       
+                        // }                    
+                        // currentAttr.value = st;
                     }
                 }       
             }        
@@ -129,7 +131,7 @@ class TAG {
                                 expr.push({
                                     type: "text",
                                     value : v,
-                                    target : curr.parentNode
+                                    target : node
                                 })       
                             })
                         }else{
@@ -138,10 +140,16 @@ class TAG {
                             expr.push({
                                 type: "text",
                                 value : v,
-                                target : curr.parentNode
+                                target : node
                             })   
                         }
-                    };
+                    }else{
+                        expr.push({
+                            type: "undefined",
+                            value : v,
+                            target : curr
+                        })  
+                    }
                     
                 }else if(curr.textContent === "T" + this.id){
                     const v = this.punchingHole.shift()
@@ -151,7 +159,13 @@ class TAG {
                             value : v,
                             target : curr
                         })   
-                    };                    
+                    }else{
+                        expr.push({
+                            type: "undefined",
+                            value : v,
+                            target : curr
+                        })   
+                    }
                 }            
             }
             

@@ -131,7 +131,8 @@ class TAG {
                                 expr.push({
                                     type: "text",
                                     value : v,
-                                    target : node
+                                    target : node,
+                                    targetComment : curr
                                 })       
                             })
                         }else{
@@ -140,14 +141,16 @@ class TAG {
                             expr.push({
                                 type: "text",
                                 value : v,
-                                target : node
+                                target : node,
+                                targetComment : curr
                             })   
                         }
                     }else{
                         expr.push({
                             type: "undefined",
                             value : v,
-                            target : curr
+                            target : undefined,
+                            targetComment : curr
                         })  
                     }
                     
@@ -157,13 +160,15 @@ class TAG {
                         expr.push({
                             type: "hasChild",
                             value : v,
-                            target : curr
+                            target : undefined,
+                            targetComment : curr
                         })   
                     }else{
                         expr.push({
                             type: "undefined",
                             value : v,
-                            target : curr
+                            target : undefined,
+                            targetComment : curr
                         })   
                     }
                 }            

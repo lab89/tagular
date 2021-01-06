@@ -4,10 +4,10 @@ function recursive(root: TAG, target: HTMLElement = null){
     if(!root.hasOwnProperty("punchingHole")) return
     root.punchingHole.forEach((d: any)=>{
         if(d.value instanceof TAG){     
-            recursive(d.value, d.target)
+            recursive(d.value, d.targetComment)
         }else if(d.value instanceof Array){
             d.value.forEach((f: any)=>{
-                recursive(f, d.target)
+                recursive(f, d.targetComment)
             })
         }
     })   
@@ -33,30 +33,57 @@ function diff(oldTag: TAG, newTag: TAG){
         let index = 0;
         while(oldPunchingHole.length && newPunchingHole.length){
             let oph = oldPunchingHole.shift();
-            let nph = newPunchingHole.shift();          
+            let nph = newPunchingHole.shift();                      
             if((oph.type === "text") && (nph.type === "text")){
+                // check same value
                 oph.target.textContent = nph.value;
                 oldTag.punchingHole[index].value = nph.value;                
             }else if((oph.type === "undefined") && (nph.type === "text")){
-
-            }else if((oph.type === "text") && (nph.type === "undefined")){
-                oph.target.remove();
+                const text = document.createTextNode(nph.value)
+                oph.targetComment.parentElement.insertBefore(text, oph.targetComment)
+                oph.type = "text"
+                oph.target = text;
+                oph.value = nph.value;
+            }else if((oph.type === "text") && (nph.type === "undefined")){                  
+                oph.target.remove();                 
+                oph.type = "undefined";                
+                oph.target = undefined;
+                oph.value = undefined;   
             }else if((oph.type === "text") && (nph.type === "hasChild")){
-                // recursive(nph.value)
-                // oph.target.parentElement.insertBefore(nph.value.fragment, oph.target)
-                // oph.target.remove();                
-            }else if((oph.type === "attribute") && (nph.type === "attribute")){
+                recursive(nph.value)
+                const comment = document.createElement("Comment");
+                comment.nodeValue = oldTag.id
+                oph.target.parentElement.insertBefore(comment, oph.targetComment)
+                oph.target.parentElement.insertBefore(nph.value.fragment, comment)
+                oph.target.remove();                      
 
+                oph.type = "hasChild";
+                oph.target = comment.previousSibling;
+                oph.targetComment = comment;
+                oph.value = nph.value;                
+            }else if((oph.type === "attribute") && (nph.type === "attribute")){
+                // attribute setting..
+                // check same value
             }else if((oph.type === "hasChild") && (nph.type === "hasChild")){
-                
-            }else if((oph.type === "hasChild") &&(nph.type === "undeinfed")){
-                
-            }else if((oph.type === "undefined") && (nph.type === "hasChild")){
-                // recursive(nph.value)
-                // oph.target.parentElement.insertBefore(nph.value.fragment, oph.target)
-                // oph.target.remove();                
+                // diff..
+            }else if((oph.type === "hasChild") &&(nph.type === "undefined")){
+                oph.targetComment.previousSibling.remove();
+                oph.type = "undefined";
+                oph.target = undefined;
+                oph.value = undefined;
+            }else if((oph.type === "undefined") && (nph.type === "hasChild")){   
+                recursive(nph.value)
+                oph.targetComment.parentElement.insertBefore(nph.value.fragment, oph.targetComment)
+                oph.type = "hasChild";
+                oph.target = oph.targetComment.previousSibling;
+                oph.value = nph.value;              
             }else if((oph.type === "hasChild") && (nph.type === "text")){
-                
+                oph.target.remove();
+                const text = document.createTextNode(nph.value)
+                oph.targetComment.parentElement.insertBefore(text, oph.targetComment)
+                oph.type = "text"
+                oph.target = text;
+                oph.value = nph.value;
             }                      
             index++;
         }
@@ -76,6 +103,7 @@ function reader(name: string){
         }else{
             diff(oldData, data);
         }
+        console.log(data);
     }
 }
 export default reader;

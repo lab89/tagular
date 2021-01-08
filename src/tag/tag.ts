@@ -1,4 +1,3 @@
-import keypunch from '../keypunch/keypunch'
 import {uuidv4} from '../util/util'
 
 class TAG {    
@@ -11,27 +10,21 @@ class TAG {
     private inserted: number = 0;
 
     public fragment: DocumentFragment;
-    public parent: TAG;
-    constructor(strings: string[], ...expr: any[]){    
-        this.punchingText = strings //.map((d)=> d.trim());
+    constructor(strings: string[], ...expr: any[]){  
+        // https://stackoverflow.com/questions/19127384/what-is-a-regex-to-match-only-an-empty-string  
+        this.punchingText = strings
         this.punchingHole = [...expr];         
         this.id = uuidv4();
         this.fillHole();
         this.createFragment();
-
+        
         const newPunchingHole: any[] = [];
         this.dfs(this.fragment.childNodes[0], newPunchingHole)
         this.punchingHole = newPunchingHole
 
-        this.punchingHole.forEach((d: any)=>{
-            if(d.value instanceof TAG) d.parent = this;
-            else if(d.value instanceof Array){
-                d.value.forEach((f: any)=>{
-                    if(f instanceof TAG)
-                        f.parent = this;
-                })
-            }
-        })
+    }
+    public clone(){
+        return new TAG(this.punchingText, this.punchingHole)
     }
     private isTagArray(array: Array<any>){
         let flat = false;
@@ -40,6 +33,7 @@ class TAG {
         })
         return flat;
     }
+
     private fillHole(){        
         const expr = [...this.punchingHole]
         const txt = [...this.punchingText];        
@@ -48,7 +42,7 @@ class TAG {
             const e = expr.shift();           
             
             if(e instanceof Array){
-                let flag = this.isTagArray(e)
+                let flag = this.isTagArray(e)                
                 if(flag){
                     txt.splice(this.idx + 1 + this.inserted,0, "<!--T" + this.id + "-->")    
                 }
@@ -70,6 +64,7 @@ class TAG {
         const root = document.createElement("div");
         this.fragment.appendChild(root);
         root.innerHTML = this.tagText.join("");
+        
     }
     private dfs(root: any, expr: Array<any>){
         const list: Array<any> = [root];
@@ -121,35 +116,42 @@ class TAG {
                 }       
             }        
             if(curr instanceof Comment){     
-                if(curr.textContent === this.id){
+                if(curr.textContent === this.id){                    
                     const v = this.punchingHole.shift()
                     if(v !== undefined) {
                         if(v instanceof Array){
+                            const info = {
+                                type : "text",
+                                value : [] as Array<any>,
+                                target : [] as Array<any>,
+                                targetComment : curr
+                            }                                                        
                             v.forEach((d: any)=>{
                                 const node = document.createTextNode(d)                    
-                                curr.parentNode.insertBefore(node, curr.nextSibling)
-                                expr.push({
-                                    type: "text",
-                                    value : v,
-                                    target : node,
-                                    targetComment : curr
-                                })       
+                                curr.parentNode.insertBefore(node, curr)
+                                info.value.push(d)
+                                info.target.push(node);
                             })
+                            expr.push(info)
                         }else{
-                            const node = document.createTextNode(v)                    
-                            curr.parentNode.insertBefore(node, curr.nextSibling)
-                            expr.push({
-                                type: "text",
-                                value : v,
-                                target : node,
+                            const info = {
+                                type : "text",
+                                value : [] as Array<any>,
+                                target : [] as Array<any>,
                                 targetComment : curr
-                            })   
+                            }
+                            const node = document.createTextNode(v)                    
+                            curr.parentNode.insertBefore(node, curr)
+                            info.value.push(v);
+                            info.target.push(node);
+                            expr.push(info)   
+                            
                         }
                     }else{
                         expr.push({
                             type: "undefined",
-                            value : v,
-                            target : undefined,
+                            value : [v],
+                            target : [],
                             targetComment : curr
                         })  
                     }
@@ -157,16 +159,30 @@ class TAG {
                 }else if(curr.textContent === "T" + this.id){
                     const v = this.punchingHole.shift()
                     if(v !== undefined){
-                        expr.push({
-                            type: "hasChild",
-                            value : v,
-                            target : undefined,
-                            targetComment : curr
-                        })   
+                        if(v instanceof Array){
+                            const info = {
+                                type : "hasChild",
+                                value : [] as Array<any>,
+                                target : [] as Array<any>,
+                                targetComment : curr
+                            }
+                            v.forEach((d: any)=>{         
+                                info.value.push(d);  
+                            })
+                            expr.push(info)
+                        }else{                            
+                            expr.push({
+                                type : "hasChild",
+                                value : [v] as Array<any>,
+                                target : [] as Array<any>,
+                                targetComment : curr
+                            })
+                        }
+                           
                     }else{
                         expr.push({
                             type: "undefined",
-                            value : v,
+                            value : undefined,
                             target : undefined,
                             targetComment : curr
                         })   

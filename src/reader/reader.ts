@@ -1,109 +1,266 @@
 import { TAG } from "../tag/tag";
 
-function recursive(root: TAG, target: HTMLElement = null){   
-    if(!root.hasOwnProperty("punchingHole")) return
-    root.punchingHole.forEach((d: any)=>{
-        if(d.value instanceof TAG){     
-            recursive(d.value, d.targetComment)
-        }else if(d.value instanceof Array){
+function recursive(tag: TAG, targetComment: Comment = null){
+
+    tag.punchingHole.forEach((d: any)=>{
+        if(d.value instanceof Array){
             d.value.forEach((f: any)=>{
-                recursive(f, d.targetComment)
+                if(f instanceof TAG){
+                    recursive(f, d.targetComment);
+                }
             })
         }
-    })   
-    while(root.fragment.children[0].childNodes.length){
-        root.fragment.appendChild(Array.from(root.fragment.children[0].childNodes).shift())
+    })
+    if(targetComment){
+        while(tag.fragment.children[0].childNodes.length){
+            const t = Array.from(tag.fragment.children[0].childNodes).shift()
+            tag.fragment.appendChild(t)
+        }
+        tag.fragment.children[0].remove();         
+        targetComment.parentNode.insertBefore(tag.fragment, targetComment)     
     }
-    root.fragment.children[0].remove();  
-    if(target){        
-        target.parentElement.insertBefore(root.fragment, target)        
-    }
-    return;
 }
 
-function diff(oldTag: TAG, newTag: TAG){
+function textDiff(oph: any, nph: any){
+    const ophValues = [...oph.value];
+    const nphValues = [...nph.value];
+    const ophTargets = [...oph.target];               
+    let idx = 0;
+    while(ophValues.length && nphValues.length){
+        let ophValue = ophValues.shift();
+        const nphValue = nphValues.shift();
+        const ophTarget = ophTargets.shift();
+        if(ophValue !== nphValue){                            
+            ophTarget.textContent = nphValue;
+            oph.value.splice(idx, 1, nphValue);
+        }                        
+        idx++;
+    }    
+}
+function diff(oldTag: TAG, newTag: TAG, OPH: any = null, NPH: any = null){
     // punching text 비교
     const oldTagString = oldTag.punchingText.join("")
     const newTagString = newTag.punchingText.join("")
-    // && (oldTag.punchingHole.length === newTag.punchingHole.length)
     if((oldTagString === newTagString)){
         const oldPunchingHole = [...oldTag.punchingHole];
         const newPunchingHole = [...newTag.punchingHole];
+        
 
-        let index = 0;
         while(oldPunchingHole.length && newPunchingHole.length){
             let oph = oldPunchingHole.shift();
             let nph = newPunchingHole.shift();                      
             if((oph.type === "text") && (nph.type === "text")){
-                // check same value
-                oph.target.textContent = nph.value;
-                oldTag.punchingHole[index].value = nph.value;                
+                if(oph.value.length === nph.value.length){     
+                    textDiff(oph, nph);             
+                }else if(oph.value.length > nph.value.length){                    
+                    oph.target.pop().remove();
+                    oph.value.pop();
+                    textDiff(oph, nph);
+                }else if(oph.value.length < nph.value.length){
+                    const lengthDiff = nph.value.length - oph.value.length;
+                    for(let i = 0; i < lengthDiff; i++){
+                        const node = document.createTextNode(nph.value[(nph.value.length - 1) - i])                    
+                        oph.targetComment.parentNode.insertBefore(node, oph.targetComment)
+                        oph.value.push(nph.value[(nph.value.length - 1) - i])
+                        oph.target.push(node);
+                    }                       
+                    textDiff(oph, nph);
+                }                   
             }else if((oph.type === "undefined") && (nph.type === "text")){
-                const text = document.createTextNode(nph.value)
-                oph.targetComment.parentElement.insertBefore(text, oph.targetComment)
                 oph.type = "text"
-                oph.target = text;
-                oph.value = nph.value;
+                nph.value.forEach((d: any)=>{
+                    const node = document.createTextNode(nph.value)
+                    oph.targetComment.parentElement.insertBefore(node, oph.targetComment)
+                    oph.target.push(node);
+                    oph.value.push(d);
+                })              
             }else if((oph.type === "text") && (nph.type === "undefined")){                  
-                oph.target.remove();                 
+                oph.target.forEach((t: any)=>t.remove())
                 oph.type = "undefined";                
-                oph.target = undefined;
-                oph.value = undefined;   
+                oph.target = [];
+                oph.value = [];   
             }else if((oph.type === "text") && (nph.type === "hasChild")){
-                recursive(nph.value)
-                const comment = document.createElement("Comment");
-                comment.nodeValue = oldTag.id
-                oph.target.parentElement.insertBefore(comment, oph.targetComment)
-                oph.target.parentElement.insertBefore(nph.value.fragment, comment)
-                oph.target.remove();                      
-
+                oph.target.forEach((d: any)=>{
+                    d.remove();                    
+                })
                 oph.type = "hasChild";
-                oph.target = comment.previousSibling;
-                oph.targetComment = comment;
-                oph.value = nph.value;                
+                oph.target = [];
+                nph.value.forEach((d: any)=>{                    
+                    recursive(d);
+                    while(d.fragment.children[0].childNodes.length){
+                        const t = Array.from(d.fragment.children[0].childNodes).shift()
+                        
+                        if(t instanceof Text){
+                            if((/^(?!.)/s.test(t.textContent.trim()))){
+                                t.remove()
+                                continue;
+                            }
+                        }
+                        if(!(t instanceof Comment)){
+                            oph.target.push(t);
+                        }
+                        d.fragment.appendChild(t)
+
+                    }
+                    d.fragment.children[0].remove(); 
+          
+                    oph.targetComment.parentElement.insertBefore(d.fragment, oph.targetComment)  
+                })                     
+                oph.value = [...nph.value];         
+                
             }else if((oph.type === "attribute") && (nph.type === "attribute")){
                 // attribute setting..
-                // check same value
+                // check same value                
+                if(typeof nph.value === "function"){
+                    // oph.target.ownerElement.removeEventListener(oph.name.slice(1, oph.name.length), oph.value);  
+                    // oph.target.ownerElement.addEventListener(oph.name.slice(1, oph.name.length), nph.value); 
+                    // oph.target.ownerElement.nodeValue = nph.value; 
+                }else{                    
+                    if(oph.value === nph.value) continue;
+                    oph.target.value = nph.value;
+                    oph.value = nph.value;
+                }
             }else if((oph.type === "hasChild") && (nph.type === "hasChild")){
-                // diff..
-            }else if((oph.type === "hasChild") &&(nph.type === "undefined")){
-                oph.targetComment.previousSibling.remove();
+                // diff..        
+                                
+                if(oph.value.length === nph.value.length){
+                    const ophValues = [...oph.value];
+                    const nphValues = [...nph.value];
+                    while(ophValues.length && nphValues.length){
+                        const ophValue = ophValues.shift();
+                        const nphValue = nphValues.shift();
+                        diff(ophValue, nphValue, oph, nph)
+                    }
+                }
+                else if(oph.value.length > nph.value.length){    
+                    const lengthDiff = oph.value.length  - nph.value.length;
+                    for(let i = 0 ; i < lengthDiff ; i++){
+                        oph.value.pop().punchingHole.forEach((d: any)=>{
+                            oph.target.pop().remove()
+                        })
+                    }                
+                    
+                    const ophValues = [...oph.value];
+                    const nphValues = [...nph.value];
+                    while(ophValues.length && nphValues.length){
+                        const ophValue = ophValues.shift();
+                        const nphValue = nphValues.shift();
+                        diff(ophValue, nphValue, oph, nph)
+                    }
+                }
+                else if(oph.value.length < nph.value.length){
+                    const lengthDiff = nph.value.length - oph.value.length;
+                    for(let i = 0; i < lengthDiff; i++){         
+                        const newT = oph.value[(oph.value.length - 1) - i].clone();                                                               
+                        recursive(newT);  
+                        while(newT.fragment.children[0].childNodes.length){
+                            const t = Array.from(newT.fragment.children[0].childNodes).shift()
+                            
+                            if(t instanceof Text){
+                                if((/^(?!.)/s.test(t.textContent.trim()))){
+                                    t.remove()
+                                    continue;
+                                }
+                            }
+                            if(!(t instanceof Comment)){
+                                oph.target.push(t);
+                            }
+                            newT.fragment.appendChild(t)
+                        }
+                        newT.fragment.children[0].remove(); 
+                        oph.targetComment.parentElement.insertBefore(newT.fragment, oph.targetComment)
+                        oph.value.push(newT);
+                    }    
+                       
+                    
+                    const ophValues = [...oph.value];
+                    const nphValues = [...nph.value];
+                    while(ophValues.length && nphValues.length){
+                        const ophValue = ophValues.shift();
+                        const nphValue = nphValues.shift();
+                        diff(ophValue, nphValue, oph, nph)
+                    }          
+                }
+                  
+            }else if((oph.type === "hasChild") &&(nph.type === "undefined")){                
+                oph.target.forEach((d: any)=>{
+                    d.remove();                    
+                })
                 oph.type = "undefined";
-                oph.target = undefined;
-                oph.value = undefined;
+                oph.target = [];
+                oph.value = [];
             }else if((oph.type === "undefined") && (nph.type === "hasChild")){   
-                recursive(nph.value)
-                oph.targetComment.parentElement.insertBefore(nph.value.fragment, oph.targetComment)
                 oph.type = "hasChild";
-                oph.target = oph.targetComment.previousSibling;
-                oph.value = nph.value;              
+                oph.target = [];
+                nph.value.forEach((d: any)=>{                    
+                    recursive(d);
+                    while(d.fragment.children[0].childNodes.length){
+                        const t = Array.from(d.fragment.children[0].childNodes).shift()
+                        
+                        if(t instanceof Text){
+                            if((/^(?!.)/s.test(t.textContent.trim()))){
+                                t.remove()
+                                continue;
+                            }
+                        }
+                        if(!(t instanceof Comment)){
+                            oph.target.push(t);
+                        }
+                        d.fragment.appendChild(t)
+
+                    }
+                    d.fragment.children[0].remove(); 
+          
+                    oph.targetComment.parentElement.insertBefore(d.fragment, oph.targetComment)  
+                })                     
+                oph.value = [...nph.value];                 
             }else if((oph.type === "hasChild") && (nph.type === "text")){
-                oph.target.remove();
+                oph.target.forEach((d: any)=> d.remove())
                 const text = document.createTextNode(nph.value)
                 oph.targetComment.parentElement.insertBefore(text, oph.targetComment)
                 oph.type = "text"
                 oph.target = text;
                 oph.value = nph.value;
             }                      
-            index++;
         }
 
         
     }else{
-        // rendertarget에 있는거 떼어 낸다.
+        oldTag.punchingHole.forEach((d: any)=>{
+            OPH.target.shift().remove();
+        })
+        OPH.value.shift();            
+
+        recursive(newTag);     
+        while(newTag.fragment.children[0].childNodes.length){
+            const t = Array.from(newTag.fragment.children[0].childNodes).shift()
+            
+            if(t instanceof Text){
+                if((/^(?!.)/s.test(t.textContent.trim()))){
+                    t.remove()
+                    continue;
+                }
+            }
+            if(!(t instanceof Comment)){
+                OPH.target.push(t);
+            }
+            newTag.fragment.appendChild(t)
+        }
+        newTag.fragment.children[0].remove(); 
+        OPH.targetComment.parentElement.insertBefore(newTag.fragment, OPH.targetComment)
+        OPH.value.push(newTag)        
     }        
 }
 function reader(name: string){       
     let oldData: TAG = null;
     return function(renderTarget: HTMLElement, data: TAG){             
-        if(!oldData){          
-            recursive(data);  
+        if(!oldData){   
+            recursive(data);                   
             renderTarget.appendChild(data.fragment);   
             oldData = data;
         }else{
             diff(oldData, data);
         }
-        console.log(data);
     }
 }
 export default reader;

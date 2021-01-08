@@ -39,8 +39,8 @@ function textDiff(oph: any, nph: any){
 }
 function diff(oldTag: TAG, newTag: TAG, OPH: any = null, NPH: any = null){
     // punching text 비교
-    const oldTagString = oldTag.punchingText.map((d: any)=> d)
-    const newTagString = newTag.punchingText.map((d: any)=> d)
+    const oldTagString = oldTag.punchingText.map((d: any)=> d.trim()).join("")
+    const newTagString = newTag.punchingText.map((d: any)=> d.trim()).join("")
 
     if((oldTagString.length === newTagString.length)){
         const oldPunchingHole = [...oldTag.punchingHole];

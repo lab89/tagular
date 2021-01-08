@@ -1,0 +1,5 @@
+node_modules/
+example/
+webpack.*.js
+LICENSE.md
+README.md

@@ -15,7 +15,6 @@
 > ## install
 ```
 npm i tagular
-
 ```
    
 ## usage

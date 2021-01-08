@@ -12,12 +12,13 @@ function recursive(tag: TAG, targetComment: Comment = null){
         }
     })
     if(targetComment){
+
         while(tag.fragment.children[0].childNodes.length){
             const t = Array.from(tag.fragment.children[0].childNodes).shift()
             tag.fragment.appendChild(t)
         }
-        tag.fragment.children[0].remove();         
-        targetComment.parentNode.insertBefore(tag.fragment, targetComment)     
+        tag.fragment.children[0].remove(); 
+        targetComment.parentNode.insertBefore(tag.fragment, targetComment)        
     }
 }
 
@@ -227,7 +228,6 @@ function diff(oldTag: TAG, newTag: TAG, OPH: any = null, NPH: any = null){
 
         
     }else{
-        console.log("흠")
         oldTag.punchingHole.forEach((d: any)=>{
             OPH.target.shift().remove();
         })
@@ -255,7 +255,8 @@ function diff(oldTag: TAG, newTag: TAG, OPH: any = null, NPH: any = null){
 }
 function reader(name: string){       
     let oldData: TAG = null;
-    return function(renderTarget: HTMLElement, data: TAG){             
+    return function(renderTarget: HTMLElement, data: TAG){  
+        console.log(data);           
         if(!oldData){   
             recursive(data);                   
             renderTarget.appendChild(data.fragment);   

@@ -9,17 +9,22 @@ class TAG {
     private idx: number = 0;    
     private inserted: number = 0;
 
-    public fragment: DocumentFragment;
+    public fragment: DocumentFragment | HTMLTableElement;
     constructor(strings: string[], ...expr: any[]){  
         // https://stackoverflow.com/questions/19127384/what-is-a-regex-to-match-only-an-empty-string  
-        this.punchingText = strings
-        this.punchingHole = [...expr];         
+        this.punchingText = strings.map((d: any)=> d.replace(/\s+/g, ' ').trim())
+               
+        this.punchingHole = [...expr];       
         this.id = uuidv4();
         this.fillHole();
+
         this.createFragment();
         
-        const newPunchingHole: any[] = [];
-        this.dfs(this.fragment.childNodes[0], newPunchingHole)
+        const newPunchingHole: any[] = [];        
+        if(this.fragment instanceof DocumentFragment)
+            this.dfs(this.fragment.childNodes[0], newPunchingHole)
+        else    
+            this.dfs(this.fragment, newPunchingHole);
         this.punchingHole = newPunchingHole
 
     }
@@ -60,11 +65,24 @@ class TAG {
         this.tagText = txt;        
     }
     private createFragment(){
-        this.fragment = document.createDocumentFragment();
-        const root = document.createElement("div");
-        this.fragment.appendChild(root);
-        root.innerHTML = this.tagText.join("");
-        
+        const testText = this.punchingText.join("")
+        if(testText.includes("<table") || testText.includes("<tr") || testText.includes("<td")){
+            this.fragment = document.createDocumentFragment();
+            const tempTable = document.createElement("table");
+            tempTable.innerHTML= this.tagText.map((d: any)=> d.replace(/\s+/g, ' ').trim()).join("");                     
+
+            
+            for(let i = 0; i < tempTable.childNodes.length; i++){
+                if(tempTable.childNodes[i] instanceof HTMLTableSectionElement){                
+                    this.fragment.appendChild(tempTable.childNodes[i]);               
+                }
+            }            
+        }else{
+            this.fragment = document.createDocumentFragment();
+            const root = document.createElement("div");
+            this.fragment.appendChild(root);
+            root.innerHTML = this.tagText.join("");        
+        }
     }
     private dfs(root: any, expr: Array<any>){
         const list: Array<any> = [root];
@@ -115,79 +133,80 @@ class TAG {
                     }
                 }       
             }        
-            if(curr instanceof Comment){     
+            if(curr instanceof Comment){
                 if(curr.textContent === this.id){                    
-                    const v = this.punchingHole.shift()
-                    if(v !== undefined) {
-                        if(v instanceof Array){
-                            const info = {
-                                type : "text",
-                                value : [] as Array<any>,
-                                target : [] as Array<any>,
-                                targetComment : curr
-                            }                                                        
-                            v.forEach((d: any)=>{
-                                const node = document.createTextNode(d)                    
+                        const v = this.punchingHole.shift()
+                        if(v !== undefined) {
+                            if(v instanceof Array){
+                                const info = {
+                                    type : "text",
+                                    value : [] as Array<any>,
+                                    target : [] as Array<any>,
+                                    targetComment : curr
+                                }                                                        
+                                v.forEach((d: any)=>{
+                                    const node = document.createTextNode(d)                    
+                                    curr.parentNode.insertBefore(node, curr)
+                                    info.value.push(d)
+                                    info.target.push(node);
+                                })
+                                expr.push(info)
+                            }else{
+                                const info = {
+                                    type : "text",
+                                    value : [] as Array<any>,
+                                    target : [] as Array<any>,
+                                    targetComment : curr
+                                }
+                                const node = document.createTextNode(v)                    
                                 curr.parentNode.insertBefore(node, curr)
-                                info.value.push(d)
+                                info.value.push(v);
                                 info.target.push(node);
-                            })
-                            expr.push(info)
+                                expr.push(info)   
+                                
+                            }
                         }else{
-                            const info = {
-                                type : "text",
-                                value : [] as Array<any>,
-                                target : [] as Array<any>,
-                                targetComment : curr
-                            }
-                            const node = document.createTextNode(v)                    
-                            curr.parentNode.insertBefore(node, curr)
-                            info.value.push(v);
-                            info.target.push(node);
-                            expr.push(info)   
-                            
-                        }
-                    }else{
-                        expr.push({
-                            type: "undefined",
-                            value : [v],
-                            target : [],
-                            targetComment : curr
-                        })  
-                    }
-                    
-                }else if(curr.textContent === "T" + this.id){
-                    const v = this.punchingHole.shift()
-                    if(v !== undefined){
-                        if(v instanceof Array){
-                            const info = {
-                                type : "hasChild",
-                                value : [] as Array<any>,
-                                target : [] as Array<any>,
-                                targetComment : curr
-                            }
-                            v.forEach((d: any)=>{         
-                                info.value.push(d);  
-                            })
-                            expr.push(info)
-                        }else{                            
                             expr.push({
-                                type : "hasChild",
-                                value : [v] as Array<any>,
-                                target : [] as Array<any>,
+                                type: "undefined",
+                                value : [v],
+                                target : [],
                                 targetComment : curr
-                            })
+                            })  
                         }
-                           
-                    }else{
-                        expr.push({
-                            type: "undefined",
-                            value : undefined,
-                            target : undefined,
-                            targetComment : curr
-                        })   
-                    }
-                }            
+                        
+                    }else if(curr.textContent === "T" + this.id){
+                        const v = this.punchingHole.shift()                    
+                        if(v !== undefined){                        
+                            if(v instanceof Array){
+                                const info = {
+                                    type : "hasChild",
+                                    value : [] as Array<any>,
+                                    target : [] as Array<any>,
+                                    targetComment : curr
+                                }
+                                v.forEach((d: any)=>{         
+                                    info.value.push(d);  
+                                })
+                                expr.push(info)
+                            }else{                            
+                                expr.push({
+                                    type : "hasChild",
+                                    value : [v] as Array<any>,
+                                    target : [] as Array<any>,
+                                    targetComment : curr
+                                })
+                            }
+                            
+                        }else{
+                            expr.push({
+                                type: "undefined",
+                                value : undefined,
+                                target : undefined,
+                                targetComment : curr
+                            })   
+                        }                       
+                    }          
+                            
             }
             
         }

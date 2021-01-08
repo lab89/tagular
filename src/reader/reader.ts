@@ -39,8 +39,9 @@ function textDiff(oph: any, nph: any){
 }
 function diff(oldTag: TAG, newTag: TAG, OPH: any = null, NPH: any = null){
     // punching text 비교
-    const oldTagString = oldTag.punchingText.join("")
-    const newTagString = newTag.punchingText.join("")
+    const oldTagString = oldTag.punchingText.join("").trim()
+    const newTagString = newTag.punchingText.join("").trim()
+
     if((oldTagString === newTagString)){
         const oldPunchingHole = [...oldTag.punchingHole];
         const newPunchingHole = [...newTag.punchingHole];
@@ -226,6 +227,7 @@ function diff(oldTag: TAG, newTag: TAG, OPH: any = null, NPH: any = null){
 
         
     }else{
+        console.log("흠")
         oldTag.punchingHole.forEach((d: any)=>{
             OPH.target.shift().remove();
         })

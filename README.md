@@ -22,6 +22,8 @@ npm i tagular
   - tag에 포함된 html tag string은 html로 변환 됩니다. 
   - tag에 포함되지 않는 모든것은 text node로 변환 됩니다.
   - reader는 tag를 rendertarget에 붙이는 역할만 합니다.
+  
+### 위에 gi
 ```
 import {tag, reader} from 'tagular'
 const mainReader = reader('main') // 의미는 없습니다... 버전 업그레이드 시 활용처가 생길 것 같습니다.
@@ -82,3 +84,45 @@ function click(data: any){
     mainReader(document.body, renderFunction())
 }
 ```
+### 테이블
+```
+const tbData = [
+    {
+        name: "kim",
+        age : 25
+    },
+    {
+        name: "park",
+        age : 20
+    },
+    {
+        name: "choi",
+        age : 25
+    }
+]
+
+tag`<table border="1">
+                            <tr>
+                                <th>이름</th>
+                                <th>나이</th>
+                            </tr>
+                            <tr>
+                                <td>홍</td>
+                                <td>24</td>
+                            </tr>
+                            ${
+                                tbData.map((d: any)=>{
+                                    return tag`
+                                        <tr>
+                                            <td>${d.name}</td>
+                                            <td>${d.age}</td>
+                                        </tr>
+                                    `
+                                })
+                                
+                            }
+                        </table>
+                    `
+```
+
+- vue나 react같은 개념으로 화면을 표현하면 됩니다. 

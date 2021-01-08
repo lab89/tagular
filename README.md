@@ -1,10 +1,10 @@
 # tagular
-> ## a extension THREE.Group for making rubik's cube(only 333)
+> ## template literal html render library
 
 <!-- ![grab-landing-page](https://github.com/lab89/three-rubiks-cube/blob/master/images/main.gif?raw=true) -->
 > ## dependencies
 ```
- three
+ none
 ```
 > ## install
 ```

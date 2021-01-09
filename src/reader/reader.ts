@@ -253,7 +253,7 @@ function diff(oldTag: TAG, newTag: TAG, OPH: any = null, NPH: any = null){
     }        
 }
 function initTarget(oldTag: TAG){
-    const oldTagString = oldTag.punchingText.map((d: any)=> d.trim()).join("")
+    const oldTagString = oldTag.tagText.map((d: any)=> d.trim()).join("")
 
     if((oldTagString.length)){
         const oldPunchingHole = [...oldTag.punchingHole];        

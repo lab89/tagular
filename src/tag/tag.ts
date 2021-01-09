@@ -80,12 +80,16 @@ class TAG {
             const root = document.createElement("table");
             root.innerHTML = this.tagText.join(""); 
             this.fragment.appendChild(root.childNodes[0]); 
+        }else if(testText.length === 0){
+            const root = document.createElement("div");
+            this.fragment.appendChild(root);
+            root.innerHTML = this.tagText.join("");       
         }else{
             const root = document.createElement("div");
             this.fragment.appendChild(root);
             root.innerHTML = this.tagText.join("");       
         }       
-                
+
         // if(testText.length){
         // }else{
         //         const root = document.createElement("div");

@@ -29,7 +29,7 @@ class TAG {
 
     }
     public clone(){
-        return new TAG(this.punchingText, this.punchingHole)
+        return new TAG(this.punchingText, ...this.punchingHole.map((d: any)=> d.value))
     }
     private isTagArray(array: Array<any>){
         let flat = false;
@@ -151,6 +151,7 @@ class TAG {
             if(curr instanceof Comment){
                 if(curr.textContent === this.id){                    
                         const v = this.punchingHole.shift()
+                        console.log(v);
                         if(v !== undefined) {
                             if(v instanceof Array){
                                 const info = {

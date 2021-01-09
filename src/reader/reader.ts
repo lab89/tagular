@@ -12,13 +12,12 @@ function recursive(tag: TAG, targetComment: Comment = null){
         }
     })
     if(targetComment){
-
         while(tag.fragment.children[0].childNodes.length){
             const t = Array.from(tag.fragment.children[0].childNodes).shift()
             tag.fragment.appendChild(t)
         }
         tag.fragment.children[0].remove(); 
-        targetComment.parentNode.insertBefore(tag.fragment, targetComment)        
+        targetComment.parentNode.insertBefore(tag.fragment, targetComment)  
     }
 }
 

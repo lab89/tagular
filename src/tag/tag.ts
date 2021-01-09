@@ -9,7 +9,7 @@ class TAG {
     private idx: number = 0;    
     private inserted: number = 0;
 
-    public fragment: DocumentFragment | HTMLTableElement;
+    public fragment: DocumentFragment;
     constructor(strings: string[], ...expr: any[]){  
         // https://stackoverflow.com/questions/19127384/what-is-a-regex-to-match-only-an-empty-string  
         this.punchingText = strings.map((d: any)=> d.replace(/\s+/g, ' ').trim())
@@ -65,24 +65,23 @@ class TAG {
         this.tagText = txt;        
     }
     private createFragment(){
+        this.fragment = document.createDocumentFragment();
         const testText = this.punchingText.join("")
-        if(testText.includes("<table") || testText.includes("<tr") || testText.includes("<td")){
-            this.fragment = document.createDocumentFragment();
-            const tempTable = document.createElement("table");
-            tempTable.innerHTML= this.tagText.map((d: any)=> d.replace(/\s+/g, ' ').trim()).join("");                     
 
-            
-            for(let i = 0; i < tempTable.childNodes.length; i++){
-                if(tempTable.childNodes[i] instanceof HTMLTableSectionElement){                
-                    this.fragment.appendChild(tempTable.childNodes[i]);               
-                }
-            }            
-        }else{
-            this.fragment = document.createDocumentFragment();
+        if(!testText.includes("<table") && !(testText.includes("<tr") && !(testText.includes("<td")))){
+            const root = document.createElement("tr");
+            this.fragment.appendChild(root);  
+            root.innerHTML = this.tagText.join("");               
+        }else if(!testText.includes("<table") && (testText.includes("<tr") && !(testText.includes("<td")))){
+            const root = document.createElement("table");
+            root.innerHTML = this.tagText.join(""); 
+            this.fragment.appendChild(root.childNodes[0]);  
+        }
+        else{
             const root = document.createElement("div");
             this.fragment.appendChild(root);
-            root.innerHTML = this.tagText.join("");        
-        }
+            root.innerHTML = this.tagText.join("");       
+        }       
     }
     private dfs(root: any, expr: Array<any>){
         const list: Array<any> = [root];
@@ -101,8 +100,7 @@ class TAG {
                             curr.addEventListener(currentAttr.name.slice(1, currentAttr.name.length), expression);  
                             currentAttr.nodeValue = expression
                         }else if(expression instanceof Object){
-                            Object.assign(curr.style, expression);
-                                               
+                            Object.assign(curr.style, expression);                                               
                         }else{                        
                             curr.setAttribute(currentAttr.name, expression);
                         }                               

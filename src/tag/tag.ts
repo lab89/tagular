@@ -71,26 +71,21 @@ class TAG {
         if(!testText.includes("<table") && !testText.includes("<tr") && testText.includes("<td")){
             const root = document.createElement("tr");
             this.fragment.appendChild(root);  
-            root.innerHTML = this.tagText.join("");   
-            console.log(root.innerHTML.toString())
-            
+            root.innerHTML = this.tagText.join("");
         }else if(!testText.includes("<table") && testText.includes("<tr") && !testText.includes("<td")){
             const root = document.createElement("table");
             root.innerHTML = this.tagText.join(""); 
-            // console.log(root.innerHTML.toString())
-
             this.fragment.appendChild(root.childNodes[0]);  
         }else if(!testText.includes("<table") && testText.includes("<tr") && testText.includes("<td")){
             const root = document.createElement("table");
             root.innerHTML = this.tagText.join(""); 
-            // console.log(root.innerHTML.toString())
             this.fragment.appendChild(root.childNodes[0]); 
         }else{
             const root = document.createElement("div");
             this.fragment.appendChild(root);
             root.innerHTML = this.tagText.join("");       
-            // console.log(root.innerHTML.toString())
         }       
+                
         // if(testText.length){
         // }else{
         //         const root = document.createElement("div");

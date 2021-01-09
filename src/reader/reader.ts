@@ -252,12 +252,54 @@ function diff(oldTag: TAG, newTag: TAG, OPH: any = null, NPH: any = null){
         OPH.value.push(newTag)        
     }        
 }
+function initTarget(oldTag: TAG){
+    const oldTagString = oldTag.punchingText.map((d: any)=> d.trim()).join("")
+
+    if((oldTagString.length)){
+        const oldPunchingHole = [...oldTag.punchingHole];        
+        while(oldPunchingHole.length){
+            let oph = oldPunchingHole.shift();
+            if((oph.type === "hasChild")){
+                // diff..        
+                                
+                if(oph.value.length){
+                    const ophValues = [...oph.value];                    
+                    while(ophValues.length){
+                        const ophValue = ophValues.shift();
+                        initTarget(ophValue)
+                    }
+                }
+                oph.value.forEach((d: any)=>{                    
+                    while(d.fragment.children[0].childNodes.length){
+                        const t = Array.from(d.fragment.children[0].childNodes).shift()
+                        
+                        if(t instanceof Text){
+                            if((/^(?!.)/s.test(t.textContent.trim()))){
+                                t.remove()
+                                continue;
+                            }
+                        }
+                        if(!(t instanceof Comment)){
+                            oph.target.push(t);
+                        }
+                        d.fragment.appendChild(t)
+
+                    }
+                    d.fragment.children[0].remove(); 
+          
+                    oph.targetComment.parentElement.insertBefore(d.fragment, oph.targetComment)  
+                })  
+            }                                   
+        }
+
+        
+    }        
+}
 function reader(name: string){       
     let oldData: TAG = null;
     return function(renderTarget: HTMLElement, data: TAG){  
-        console.log(data);           
-        if(!oldData){   
-            recursive(data);                   
+        if(!oldData){               
+            initTarget(data);   
             renderTarget.appendChild(data.fragment);   
             oldData = data;
         }else{

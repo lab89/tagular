@@ -66,22 +66,39 @@ class TAG {
     }
     private createFragment(){
         this.fragment = document.createDocumentFragment();
-        const testText = this.punchingText.join("")
-
-        if(!testText.includes("<table") && !(testText.includes("<tr") && !(testText.includes("<td")))){
+        const testText = this.punchingText.join("").trim();
+        
+        if(!testText.includes("<table") && !testText.includes("<tr") && testText.includes("<td")){
             const root = document.createElement("tr");
             this.fragment.appendChild(root);  
-            root.innerHTML = this.tagText.join("");               
-        }else if(!testText.includes("<table") && (testText.includes("<tr") && !(testText.includes("<td")))){
+            root.innerHTML = this.tagText.join("");   
+            console.log(root.innerHTML.toString())
+            
+        }else if(!testText.includes("<table") && testText.includes("<tr") && !testText.includes("<td")){
             const root = document.createElement("table");
             root.innerHTML = this.tagText.join(""); 
+            // console.log(root.innerHTML.toString())
+
             this.fragment.appendChild(root.childNodes[0]);  
-        }
-        else{
+        }else if(!testText.includes("<table") && testText.includes("<tr") && testText.includes("<td")){
+            const root = document.createElement("table");
+            root.innerHTML = this.tagText.join(""); 
+            // console.log(root.innerHTML.toString())
+            this.fragment.appendChild(root.childNodes[0]); 
+        }else{
             const root = document.createElement("div");
             this.fragment.appendChild(root);
             root.innerHTML = this.tagText.join("");       
+            // console.log(root.innerHTML.toString())
         }       
+        // if(testText.length){
+        // }else{
+        //         const root = document.createElement("div");
+        //         this.fragment.appendChild(root);
+        //         root.innerHTML = this.tagText.join("");       
+        //         // console.log(root.innerHTML.toString())
+        // }
+        
     }
     private dfs(root: any, expr: Array<any>){
         const list: Array<any> = [root];

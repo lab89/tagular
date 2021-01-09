@@ -305,8 +305,6 @@ function reader(name: string){
         }else{
             diff(oldData, data);
         }
-        console.log(data);
-
     }
 }
 export default reader;

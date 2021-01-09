@@ -65,38 +65,53 @@ class TAG {
         this.tagText = txt;        
     }
     private createFragment(){
-        this.fragment = document.createDocumentFragment();
+        this.fragment = document.createDocumentFragment();        
         const testText = this.punchingText.join("").trim();
-        
-        if(!testText.includes("<table") && !testText.includes("<tr") && testText.includes("<td")){
-            const root = document.createElement("tr");
-            this.fragment.appendChild(root);  
-            root.innerHTML = this.tagText.join("");
-        }else if(!testText.includes("<table") && testText.includes("<tr") && !testText.includes("<td")){
-            const root = document.createElement("table");
-            root.innerHTML = this.tagText.join(""); 
-            this.fragment.appendChild(root.childNodes[0]);  
-        }else if(!testText.includes("<table") && testText.includes("<tr") && testText.includes("<td")){
-            const root = document.createElement("table");
-            root.innerHTML = this.tagText.join(""); 
-            this.fragment.appendChild(root.childNodes[0]); 
-        }else if(testText.length === 0){
-            const root = document.createElement("div");
-            this.fragment.appendChild(root);
-            root.innerHTML = this.tagText.join("");       
-        }else{
-            const root = document.createElement("div");
-            this.fragment.appendChild(root);
-            root.innerHTML = this.tagText.join("");       
-        }       
 
-        // if(testText.length){
-        // }else{
-        //         const root = document.createElement("div");
-        //         this.fragment.appendChild(root);
-        //         root.innerHTML = this.tagText.join("");       
-        //         // console.log(root.innerHTML.toString())
-        // }
+        // table 없음 정상 진행
+        if(!(/^((?!(<table>)).)*$/.test(testText))){
+            const root = document.createElement("div");
+            this.fragment.appendChild(root);
+            root.innerHTML = this.tagText.join("");
+            return;
+        }
+        // tbody -> table
+        // thead -> table
+        // tfoot -> table
+        if(!(/^((?!(<thead>|<tbody>|<tfoot>|<colgroup>|<caption>)).)*$/.test(testText))){
+            const tb = document.createElement("table");
+            tb.innerHTML = this.tagText.join(""); 
+            const tempDiv = document.createElement("div")
+            tempDiv.appendChild(tb.childNodes[0]);  
+            this.fragment.appendChild(tempDiv)
+            return;
+        }
+        // tr -> tbody
+        if(!(/^((?!(<tr>)).)*$/.test(testText))){
+            const tbody = document.createElement("tbody");
+            tbody.innerHTML = this.tagText.join(""); 
+            const tempDiv = document.createElement("div")
+            tempDiv.appendChild(tbody.childNodes[0]);  
+            this.fragment.appendChild(tempDiv)
+            return
+        }
+        // td -> tr
+        // th -> tr  
+        if(!(/^((?!(<td>|<th>)).)*$/.test(testText))){
+            const tr = document.createElement("tr");
+            tr.innerHTML = this.tagText.join(""); 
+            this.fragment.appendChild(tr);  
+            return;
+        }      
+
+        // lenngth == 0;
+        if(!testText.length){
+            const root = document.createElement("div");
+            this.fragment.appendChild(root);
+            root.innerHTML = this.tagText.join("");
+            return;
+        }
+        
         
     }
     private dfs(root: any, expr: Array<any>){
@@ -150,7 +165,6 @@ class TAG {
             if(curr instanceof Comment){
                 if(curr.textContent === this.id){                    
                         const v = this.punchingHole.shift()
-                        console.log(v);
                         if(v !== undefined) {
                             if(v instanceof Array){
                                 const info = {

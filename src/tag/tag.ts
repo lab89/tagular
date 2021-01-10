@@ -21,10 +21,7 @@ class TAG {
         this.createFragment();
         
         const newPunchingHole: any[] = [];        
-        if(this.fragment instanceof DocumentFragment)
-            this.dfs(this.fragment.childNodes[0], newPunchingHole)
-        else    
-            this.dfs(this.fragment, newPunchingHole);
+        this.dfs(this.fragment.childNodes[0], newPunchingHole)
         this.punchingHole = newPunchingHole
 
     }
@@ -169,8 +166,8 @@ class TAG {
                             if(v instanceof Array){
                                 const info = {
                                     type : "text",
-                                    value : [] as Array<any>,
-                                    target : [] as Array<any>,
+                                    value : [] as Array<Number | String>,
+                                    target : [] as Array<Text>,
                                     targetComment : curr
                                 }                                                        
                                 v.forEach((d: any)=>{
@@ -183,8 +180,8 @@ class TAG {
                             }else{
                                 const info = {
                                     type : "text",
-                                    value : [] as Array<any>,
-                                    target : [] as Array<any>,
+                                    value : [] as Array<Number | String>,
+                                    target : [] as Array<Text>,
                                     targetComment : curr
                                 }
                                 const node = document.createTextNode(v)                    
@@ -209,8 +206,8 @@ class TAG {
                             if(v instanceof Array){
                                 const info = {
                                     type : "hasChild",
-                                    value : [] as Array<any>,
-                                    target : [] as Array<any>,
+                                    value : [] as Array<TAG>,
+                                    target : [] as Array<HTMLElement>,
                                     targetComment : curr
                                 }
                                 v.forEach((d: any)=>{         
@@ -220,8 +217,8 @@ class TAG {
                             }else{                            
                                 expr.push({
                                     type : "hasChild",
-                                    value : [v] as Array<any>,
-                                    target : [] as Array<any>,
+                                    value : [v] as Array<TAG>,
+                                    target : [] as Array<HTMLElement>,
                                     targetComment : curr
                                 })
                             }

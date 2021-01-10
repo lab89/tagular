@@ -1,8 +1,9 @@
 import { TAG } from "../tag/tag";
+import { hole } from "../types/types";
 
 function recursive(tag: TAG, targetComment: Comment = null){
 
-    tag.punchingHole.forEach((d: any)=>{
+    tag.punchingHole.forEach((d: hole)=>{
         if(d.value instanceof Array){
             d.value.forEach((f: any)=>{
                 if(f instanceof TAG){
@@ -21,7 +22,7 @@ function recursive(tag: TAG, targetComment: Comment = null){
     }
 }
 
-function textDiff(oph: any, nph: any){
+function textDiff(oph: hole, nph: hole){
     const ophValues = [...oph.value];
     const nphValues = [...nph.value];
     const ophTargets = [...oph.target];               
@@ -31,16 +32,16 @@ function textDiff(oph: any, nph: any){
         const nphValue = nphValues.shift();
         const ophTarget = ophTargets.shift();
         if(ophValue !== nphValue){                            
-            ophTarget.textContent = nphValue;
+            ophTarget.textContent = nphValue as string;
             oph.value.splice(idx, 1, nphValue);
         }                        
         idx++;
     }    
 }
-function diff(oldTag: TAG, newTag: TAG, OPH: any = null, NPH: any = null){
+function diff(oldTag: TAG, newTag: TAG, OPH: hole = null, NPH: hole = null){
     // punching text 비교
-    const oldTagString = oldTag.punchingText.map((d: any)=> d.trim()).join("")
-    const newTagString = newTag.punchingText.map((d: any)=> d.trim()).join("")
+    const oldTagString = oldTag.punchingText.map((d: string)=> d.trim()).join("")
+    const newTagString = newTag.punchingText.map((d: string)=> d.trim()).join("")
 
     if((oldTagString.length === newTagString.length)){
         const oldPunchingHole = [...oldTag.punchingHole];
@@ -69,24 +70,24 @@ function diff(oldTag: TAG, newTag: TAG, OPH: any = null, NPH: any = null){
                 }                   
             }else if((oph.type === "undefined") && (nph.type === "text")){
                 oph.type = "text"
-                nph.value.forEach((d: any)=>{
+                nph.value.forEach((d: string | number)=>{
                     const node = document.createTextNode(nph.value)
                     oph.targetComment.parentElement.insertBefore(node, oph.targetComment)
                     oph.target.push(node);
                     oph.value.push(d);
                 })              
             }else if((oph.type === "text") && (nph.type === "undefined")){                  
-                oph.target.forEach((t: any)=>t.remove())
+                oph.target.forEach((t: HTMLElement)=>t.remove())
                 oph.type = "undefined";                
                 oph.target = [];
                 oph.value = [];   
             }else if((oph.type === "text") && (nph.type === "hasChild")){
-                oph.target.forEach((d: any)=>{
+                oph.target.forEach((d: HTMLElement)=>{
                     d.remove();                    
                 })
                 oph.type = "hasChild";
                 oph.target = [];
-                nph.value.forEach((d: any)=>{                    
+                nph.value.forEach((d: TAG)=>{                    
                     recursive(d);
                     while(d.fragment.children[0].childNodes.length){
                         const t = Array.from(d.fragment.children[0].childNodes).shift()
@@ -136,7 +137,7 @@ function diff(oldTag: TAG, newTag: TAG, OPH: any = null, NPH: any = null){
                 else if(oph.value.length > nph.value.length){    
                     const lengthDiff = oph.value.length  - nph.value.length;
                     for(let i = 0 ; i < lengthDiff ; i++){
-                        oph.value.pop().punchingHole.forEach((d: any)=>{
+                        oph.value.pop().punchingHole.forEach((d: hole)=>{
                             oph.target.pop().remove()
                         })
                     }                
@@ -184,7 +185,7 @@ function diff(oldTag: TAG, newTag: TAG, OPH: any = null, NPH: any = null){
                 }
                   
             }else if((oph.type === "hasChild") &&(nph.type === "undefined")){                
-                oph.target.forEach((d: any)=>{
+                oph.target.forEach((d: HTMLElement)=>{
                     d.remove();                    
                 })
                 oph.type = "undefined";
@@ -193,7 +194,7 @@ function diff(oldTag: TAG, newTag: TAG, OPH: any = null, NPH: any = null){
             }else if((oph.type === "undefined") && (nph.type === "hasChild")){   
                 oph.type = "hasChild";
                 oph.target = [];
-                nph.value.forEach((d: any)=>{                    
+                nph.value.forEach((d: TAG)=>{                    
                     recursive(d);
                     while(d.fragment.children[0].childNodes.length){
                         const t = Array.from(d.fragment.children[0].childNodes).shift()
@@ -216,7 +217,7 @@ function diff(oldTag: TAG, newTag: TAG, OPH: any = null, NPH: any = null){
                 })                     
                 oph.value = [...nph.value];                 
             }else if((oph.type === "hasChild") && (nph.type === "text")){
-                oph.target.forEach((d: any)=> d.remove())
+                oph.target.forEach((d: HTMLElement)=> d.remove())
                 const text = document.createTextNode(nph.value)
                 oph.targetComment.parentElement.insertBefore(text, oph.targetComment)
                 oph.type = "text"
@@ -227,14 +228,14 @@ function diff(oldTag: TAG, newTag: TAG, OPH: any = null, NPH: any = null){
 
         
     }else{
-        oldTag.punchingHole.forEach((d: any)=>{
+        oldTag.punchingHole.forEach((d: HTMLElement)=>{
             OPH.target.shift().remove();
         })
         OPH.value.shift();            
 
         recursive(newTag);     
         while(newTag.fragment.children[0].childNodes.length){
-            const t = Array.from(newTag.fragment.children[0].childNodes).shift()
+            const t = Array.from(newTag.fragment.children[0].childNodes).shift() as HTMLElement
             
             if(t instanceof Text){
                 if((/^(?!.)/s.test(t.textContent.trim()))){
@@ -269,7 +270,7 @@ function initTarget(oldTag: TAG){
                         initTarget(ophValue)
                     }
                 }
-                oph.value.forEach((d: any)=>{                    
+                oph.value.forEach((d: TAG)=>{                    
                     while(d.fragment.children[0].childNodes.length){
                         const t = Array.from(d.fragment.children[0].childNodes).shift()
                         

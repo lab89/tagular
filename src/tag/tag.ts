@@ -1,8 +1,9 @@
+import { hole } from '../types/types';
 import {uuidv4} from '../util/util'
 
 class TAG {    
     public punchingText: string[];    
-    public punchingHole: Array<any> = [];  
+    public punchingHole: Array<hole | any> = [];  
     public tagText: string[];
     public id: string = "";
 
@@ -20,7 +21,7 @@ class TAG {
 
         this.createFragment();
         
-        const newPunchingHole: any[] = [];        
+        const newPunchingHole: Array<hole> = [];        
         this.dfs(this.fragment.childNodes[0], newPunchingHole)
         this.punchingHole = newPunchingHole
 
@@ -136,8 +137,9 @@ class TAG {
                             type: "attribute",
                             name: currentAttr.name,
                             value : expression,
-                            target : currentAttr
-                        })                    
+                            target : currentAttr,
+                            targetComment : null
+                        } as hole)                    
                     }else if(currentAttr.value.includes("<!--")){                                                            
                         console.error("invalid attribute")
                         return;
@@ -164,12 +166,12 @@ class TAG {
                         const v = this.punchingHole.shift()
                         if(v !== undefined) {
                             if(v instanceof Array){
-                                const info = {
+                                const info: hole = {
                                     type : "text",
-                                    value : [] as Array<Number | String>,
-                                    target : [] as Array<Text>,
+                                    value : [],
+                                    target : [],
                                     targetComment : curr
-                                }                                                        
+                                }                                                      
                                 v.forEach((d: any)=>{
                                     const node = document.createTextNode(d)                    
                                     curr.parentNode.insertBefore(node, curr)
@@ -178,10 +180,10 @@ class TAG {
                                 })
                                 expr.push(info)
                             }else{
-                                const info = {
+                                const info: hole = {
                                     type : "text",
-                                    value : [] as Array<Number | String>,
-                                    target : [] as Array<Text>,
+                                    value : [],
+                                    target : [],
                                     targetComment : curr
                                 }
                                 const node = document.createTextNode(v)                    
@@ -204,10 +206,10 @@ class TAG {
                         const v = this.punchingHole.shift()                    
                         if(v !== undefined){                        
                             if(v instanceof Array){
-                                const info = {
+                                const info: hole = {
                                     type : "hasChild",
-                                    value : [] as Array<TAG>,
-                                    target : [] as Array<HTMLElement>,
+                                    value : [],
+                                    target : [],
                                     targetComment : curr
                                 }
                                 v.forEach((d: any)=>{         
@@ -217,8 +219,8 @@ class TAG {
                             }else{                            
                                 expr.push({
                                     type : "hasChild",
-                                    value : [v] as Array<TAG>,
-                                    target : [] as Array<HTMLElement>,
+                                    value : [v],
+                                    target : [],
                                     targetComment : curr
                                 })
                             }

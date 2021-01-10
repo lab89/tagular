@@ -101,16 +101,10 @@ class TAG {
             this.fragment.appendChild(tr);  
             return;
         }      
-
-        // lenngth == 0;
-        if(!testText.length){
-            const root = document.createElement("div");
-            this.fragment.appendChild(root);
-            root.innerHTML = this.tagText.join("");
-            return;
-        }
-        
-        
+        const root = document.createElement("div");
+        this.fragment.appendChild(root);
+        root.innerHTML = this.tagText.join("");
+        return;        
     }
     private dfs(root: any, expr: Array<any>){
         const list: Array<any> = [root];

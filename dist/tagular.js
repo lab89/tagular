@@ -10705,9 +10705,9 @@ var TAG = /** @class */ (function () {
         var testText = this.punchingText.join("").trim();
         // table 없음 정상 진행
         if (!(/^((?!(<table>)).)*$/.test(testText))) {
-            var root = document.createElement("div");
-            this.fragment.appendChild(root);
-            root.innerHTML = this.tagText.join("");
+            var root_1 = document.createElement("div");
+            this.fragment.appendChild(root_1);
+            root_1.innerHTML = this.tagText.join("");
             return;
         }
         // tbody -> table
@@ -10738,13 +10738,10 @@ var TAG = /** @class */ (function () {
             this.fragment.appendChild(tr);
             return;
         }
-        // lenngth == 0;
-        if (!testText.length) {
-            var root = document.createElement("div");
-            this.fragment.appendChild(root);
-            root.innerHTML = this.tagText.join("");
-            return;
-        }
+        var root = document.createElement("div");
+        this.fragment.appendChild(root);
+        root.innerHTML = this.tagText.join("");
+        return;
     };
     TAG.prototype.dfs = function (root, expr) {
         var list = [root];

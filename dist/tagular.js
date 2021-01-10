@@ -10531,12 +10531,14 @@ function diff(oldTag, newTag, OPH, NPH) {
                 oph.value = __spreadArrays(nph.value);
             }
             else if ((oph.type === "hasChild") && (nph.type === "text")) {
+                oph.type = "hasChild";
                 oph.target.forEach(function (d) { return d.remove(); });
+                oph.target = [];
                 var text = document.createTextNode(nph.value);
                 oph.targetComment.parentElement.insertBefore(text, oph.targetComment);
                 oph.type = "text";
-                oph.target = text;
-                oph.value = nph.value;
+                oph.target.push(text);
+                oph.value.push(nph.value);
             }
         };
         while (oldPunchingHole.length && newPunchingHole.length) {

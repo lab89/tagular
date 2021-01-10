@@ -216,12 +216,14 @@ function diff(oldTag: TAG, newTag: TAG, OPH: hole = null, NPH: hole = null){
                 })                     
                 oph.value = [...nph.value];                 
             }else if((oph.type === "hasChild") && (nph.type === "text")){
+                oph.type = "hasChild";
                 oph.target.forEach((d: HTMLElement)=> d.remove())
+                oph.target = [];
                 const text = document.createTextNode(nph.value)
                 oph.targetComment.parentElement.insertBefore(text, oph.targetComment)
                 oph.type = "text"
-                oph.target = text;
-                oph.value = nph.value;
+                oph.target.push(text);
+                oph.value.push(nph.value);
             }                      
         }
 

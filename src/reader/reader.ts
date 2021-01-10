@@ -152,7 +152,7 @@ function diff(oldTag: TAG, newTag: TAG, OPH: hole = null, NPH: hole = null){
                 else if(oph.value.length < nph.value.length){
                     const lengthDiff = nph.value.length - oph.value.length;
                     for(let i = 0; i < lengthDiff; i++){         
-                        const newT = oph.value[(oph.value.length - 1) - i].clone();                                                               
+                        const newT = nph.value[(nph.value.length - 1) - i].clone();                                                               
                         recursive(newT);  
                         while(newT.fragment.children[0].childNodes.length){
                             const t = Array.from(newT.fragment.children[0].childNodes).shift()

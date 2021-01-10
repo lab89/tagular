@@ -10471,7 +10471,7 @@ function diff(oldTag, newTag, OPH, NPH) {
                 else if (oph.value.length < nph.value.length) {
                     var lengthDiff = nph.value.length - oph.value.length;
                     for (var i = 0; i < lengthDiff; i++) {
-                        var newT = oph.value[(oph.value.length - 1) - i].clone();
+                        var newT = nph.value[(nph.value.length - 1) - i].clone();
                         recursive(newT);
                         while (newT.fragment.children[0].childNodes.length) {
                             var t = Array.from(newT.fragment.children[0].childNodes).shift();

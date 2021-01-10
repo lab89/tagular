@@ -113,10 +113,8 @@ function diff(oldTag: TAG, newTag: TAG, OPH: hole = null, NPH: hole = null){
             }else if((oph.type === "attribute") && (nph.type === "attribute")){
                 // attribute setting..
                 // check same value                
-                if(typeof nph.value === "function"){
-                    // oph.target.ownerElement.removeEventListener(oph.name.slice(1, oph.name.length), oph.value);  
-                    // oph.target.ownerElement.addEventListener(oph.name.slice(1, oph.name.length), nph.value); 
-                    // oph.target.ownerElement.nodeValue = nph.value; 
+                if(typeof nph.value === "function"){                     
+                    oph.target.ownerElement["on"+oph.name.slice(1, oph.name.length)] = nph.value;
                 }else{                    
                     if(oph.value === nph.value) continue;
                     oph.target.value = nph.value;
@@ -138,7 +136,8 @@ function diff(oldTag: TAG, newTag: TAG, OPH: hole = null, NPH: hole = null){
                     const lengthDiff = oph.value.length  - nph.value.length;
                     for(let i = 0 ; i < lengthDiff ; i++){
                         oph.value.pop().punchingHole.forEach((d: hole)=>{
-                            oph.target.pop().remove()
+                            if(d.type !== "attribute")
+                                oph.target.pop().remove()
                         })
                     }                
                     

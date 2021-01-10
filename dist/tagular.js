@@ -10432,9 +10432,7 @@ function diff(oldTag, newTag, OPH, NPH) {
                 // attribute setting..
                 // check same value                
                 if (typeof nph.value === "function") {
-                    // oph.target.ownerElement.removeEventListener(oph.name.slice(1, oph.name.length), oph.value);  
-                    // oph.target.ownerElement.addEventListener(oph.name.slice(1, oph.name.length), nph.value); 
-                    // oph.target.ownerElement.nodeValue = nph.value; 
+                    oph.target.ownerElement["on" + oph.name.slice(1, oph.name.length)] = nph.value;
                 }
                 else {
                     if (oph.value === nph.value)
@@ -10458,7 +10456,8 @@ function diff(oldTag, newTag, OPH, NPH) {
                     var lengthDiff = oph.value.length - nph.value.length;
                     for (var i = 0; i < lengthDiff; i++) {
                         oph.value.pop().punchingHole.forEach(function (d) {
-                            oph.target.pop().remove();
+                            if (d.type !== "attribute")
+                                oph.target.pop().remove();
                         });
                     }
                     var ophValues = __spreadArrays(oph.value);
@@ -10756,8 +10755,9 @@ var TAG = /** @class */ (function () {
                     if (currentAttr.value === "<!--" + this_1.id + "-->") {
                         var expression = this_1.punchingHole.shift();
                         if (currentAttr.name.includes("@")) {
-                            curr.addEventListener(currentAttr.name.slice(1, currentAttr.name.length), expression);
-                            currentAttr.nodeValue = expression;
+                            // curr.addEventListener(currentAttr.name.slice(1, currentAttr.name.length), expression);  
+                            // currentAttr.nodeValue = expression
+                            curr["on" + currentAttr.name.slice(1, currentAttr.name.length)] = expression;
                         }
                         else if (expression instanceof Object) {
                             Object.assign(curr.style, expression);

@@ -120,8 +120,9 @@ class TAG {
                     if(currentAttr.value === "<!--" + this.id + "-->"){
                         const expression = this.punchingHole.shift();
                         if(currentAttr.name.includes("@")){
-                            curr.addEventListener(currentAttr.name.slice(1, currentAttr.name.length), expression);  
-                            currentAttr.nodeValue = expression
+                            // curr.addEventListener(currentAttr.name.slice(1, currentAttr.name.length), expression);  
+                            // currentAttr.nodeValue = expression
+                            curr["on"+currentAttr.name.slice(1, currentAttr.name.length)] = expression
                         }else if(expression instanceof Object){
                             Object.assign(curr.style, expression);                                               
                         }else{                        

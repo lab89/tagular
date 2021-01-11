@@ -27,6 +27,15 @@ npm i tagular
  const myTag = tag`~~`;
  
  myReader(document.body, tag)
+ 
+ //중첩 태그도 가능 합니다. 뭐든지!
+ tag`
+  ~
+  tag `
+   tag `
+   `
+  `
+ `
 ```
 - 두 가지 함수밖에 없습니다(tag, render)
   - tag에 포함된 html tag string은 html로 변환 됩니다. 

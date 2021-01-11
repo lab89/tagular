@@ -230,9 +230,13 @@ function diff(oldTag: TAG, newTag: TAG, OPH: hole = null, NPH: hole = null){
 
         
     }else{
-        oldTag.punchingHole.forEach((d: HTMLElement)=>{
+        while(OPH.target.length){
             OPH.target.shift().remove();
-        })
+        }
+        OPH.target = [];
+        // oldTag.punchingHole.forEach((d: HTMLElement)=>{
+        //     OPH.target.shift().remove();
+        // })
         OPH.value.shift();            
 
         recursive(newTag);     

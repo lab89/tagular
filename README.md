@@ -1,4 +1,4 @@
-![grab-landing-page](https://github.com/lab89/tagular/blob/main/images/logo.PNG?raw=true) 
+![grab-landing-page](https://github.com/lab89/tagular/blob/main/images/logo.PNG?raw=true)
 ## template literal html render library
 ![grab-landing-page](https://github.com/lab89/tagular/blob/main/images/main2.gif?raw=true) 
 https://lab89.github.io/sample/tagular-input

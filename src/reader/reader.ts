@@ -316,10 +316,10 @@ function reader(name: string){
         if(!oldData){               
             initTarget(data);   
             renderTarget.appendChild(data.fragment);               
+            oldData = data
         }else{
             diff(oldData, data);            
         }
-        oldData = data
     }
 }
 export default reader;

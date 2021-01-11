@@ -1,6 +1,6 @@
 {
   "name": "tagular",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "template literal engine",
   "main": "dist/tagular.js",
   "scripts": {

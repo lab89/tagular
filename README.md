@@ -7,6 +7,7 @@ https://lab89.github.io/sample/tagular-input
 - 이벤트 콜백 및 스타일 및 클래스 등 Attribute에도 적용 가능 합니다.
 - script태그는 적용되지 않습니다!
 - 순수하게 렌더만 하기 때문에 나머지는 여러분들이 조합하기 나름 입니다!
+- 템플릿 리터럴 안의 비동기 코드는 작동하지 않습니다. 비동기 작업은 밖에서 하시고, 렌더만 하면 됩니다.
 > ## dependencies
 ```
  none
@@ -37,7 +38,7 @@ npm i tagular
 https://lab89.github.io/sample/tagular-todo
 
 ## Example : List Render 
-![grab-landing-page](https://github.com/lab89/tagular/blob/main/images/list2.gif?raw=true) 
+![grab-landing-page](https://github.com/lab89/tagular/blob/main/images/list3.gif?raw=true) 
 https://lab89.github.io/sample/tagular-list
 
 ## Example : Table row Increasing

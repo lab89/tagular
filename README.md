@@ -17,17 +17,27 @@ npm i tagular
 ```
    
 ## usage
+```
+ import {tag, reader} from 'tagular'
+ 
+ const myReader = reader("myReader");
+ const myTag = tag`~~`;
+ 
+ myReader(document.body, tag)
+```
 - 두 가지 함수밖에 없습니다(tag, render)
   - tag에 포함된 html tag string은 html로 변환 됩니다. 
   - tag에 포함되지 않는 모든것은 text node로 변환 됩니다.
   - reader는 tag를 rendertarget에 붙이는 역할만 합니다.
+  - 아래 example 을 클릭하신 후 개발자도구에서 소스를 확인하세요 간단합니다!
+
   
 ## Example : Todo List
 ![grab-landing-page](https://github.com/lab89/tagular/blob/main/images/todolist2.gif?raw=true) 
 https://lab89.github.io/sample/tagular-todo
 
 ## Example : List Render 
-![grab-landing-page](https://github.com/lab89/tagular/blob/main/images/list.gif?raw=true) 
+![grab-landing-page](https://github.com/lab89/tagular/blob/main/images/list2.gif?raw=true) 
 https://lab89.github.io/sample/tagular-list
 
 ## Example : Table row Increasing

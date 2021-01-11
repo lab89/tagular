@@ -26,9 +26,9 @@ npm i tagular
 ![grab-landing-page](https://github.com/lab89/tagular/blob/main/images/todolist2.gif?raw=true) 
 https://lab89.github.io/sample/tagular-todo
 
-## Example : Todo List
+## Example : List Render 
 ![grab-landing-page](https://github.com/lab89/tagular/blob/main/images/list.gif?raw=true) 
-https://lab89.github.io/sample/tagular-liet
+https://lab89.github.io/sample/tagular-list
 
 ## Example : Table row Increasing
 https://lab89.github.io/sample/tagular-table

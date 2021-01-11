@@ -24,7 +24,7 @@ npm i tagular
   - reader는 tag를 rendertarget에 붙이는 역할만 합니다.
   
 ## Example : Todo List
-![grab-landing-page](https://github.com/lab89/tagular/blob/main/images/todoList.gif?raw=true) 
+![grab-landing-page](https://github.com/lab89/tagular/blob/main/images/todolist.gif?raw=true) 
 https://lab89.github.io/sample/tagular-todo
 
 ## Example : Table row Increasing

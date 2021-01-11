@@ -27,7 +27,7 @@ npm i tagular
 https://lab89.github.io/sample/tagular-todo
 
 ## Example : List Render 
-![grab-landing-page](https://github.com/lab89/tagular/blob/main/images/list.gif?raw=true) 
+![grab-landing-page](https://github.com/lab89/tagular/blob/main/images/list2.gif?raw=true) 
 https://lab89.github.io/sample/tagular-list
 
 ## Example : Table row Increasing

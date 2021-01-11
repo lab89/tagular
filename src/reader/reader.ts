@@ -305,13 +305,21 @@ function initTarget(oldTag: TAG){
 function reader(name: string){       
     let oldData: TAG = null;
     return function(renderTarget: HTMLElement, data: TAG){  
+        if((!data || !renderTarget)) {
+            console.error("something is null or undefined, check parameter again")
+            return;
+        }
+        if(!(data instanceof TAG)) {
+            console.error("second parameter is not tag")
+            return;
+        }
         if(!oldData){               
             initTarget(data);   
-            renderTarget.appendChild(data.fragment);   
-            oldData = data;
+            renderTarget.appendChild(data.fragment);               
         }else{
-            diff(oldData, data);
+            diff(oldData, data);            
         }
+        oldData = data
     }
 }
 export default reader;

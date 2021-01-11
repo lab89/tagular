@@ -10616,14 +10616,22 @@ function initTarget(oldTag) {
 function reader(name) {
     var oldData = null;
     return function (renderTarget, data) {
+        if ((!data || !renderTarget)) {
+            console.error("something is null or undefined, check parameter again");
+            return;
+        }
+        if (!(data instanceof tag_1.TAG)) {
+            console.error("second parameter is not tag");
+            return;
+        }
         if (!oldData) {
             initTarget(data);
             renderTarget.appendChild(data.fragment);
-            oldData = data;
         }
         else {
             diff(oldData, data);
         }
+        oldData = data;
     };
 }
 exports.default = reader;

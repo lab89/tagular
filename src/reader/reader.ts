@@ -135,10 +135,11 @@ function diff(oldTag: TAG, newTag: TAG, OPH: hole = null, NPH: hole = null){
                 else if(oph.value.length > nph.value.length){    
                     const lengthDiff = oph.value.length  - nph.value.length;
                     for(let i = 0 ; i < lengthDiff ; i++){
-                        oph.value.pop().punchingHole.forEach((d: hole)=>{
-                            if(d.type !== "attribute")
-                                oph.target.pop().remove()
-                        })
+                        oph.value.pop()
+                        // .punchingHole.forEach((d: hole)=>{
+                        //     if(d.type !== "attribute")
+                        // })
+                        oph.target.pop().remove()
                     }                
                     
                     const ophValues = [...oph.value];

@@ -10455,10 +10455,11 @@ function diff(oldTag, newTag, OPH, NPH) {
                 else if (oph.value.length > nph.value.length) {
                     var lengthDiff = oph.value.length - nph.value.length;
                     for (var i = 0; i < lengthDiff; i++) {
-                        oph.value.pop().punchingHole.forEach(function (d) {
-                            if (d.type !== "attribute")
-                                oph.target.pop().remove();
-                        });
+                        oph.value.pop();
+                        // .punchingHole.forEach((d: hole)=>{
+                        //     if(d.type !== "attribute")
+                        // })
+                        oph.target.pop().remove();
                     }
                     var ophValues = __spreadArrays(oph.value);
                     var nphValues = __spreadArrays(nph.value);

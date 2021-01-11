@@ -1,7 +1,7 @@
 ![grab-landing-page](https://github.com/lab89/tagular/blob/main/images/logo.PNG?raw=true)
 ## template literal html render library
 
-[grab-landing-page](https://github.com/lab89/tagular/blob/main/images/main2.gif?raw=true) 
+![grab-landing-page](https://github.com/lab89/tagular/blob/main/images/main2.gif?raw=true) 
 https://lab89.github.io/sample/tagular-input
 - html, css, javascript 만으로 양방향 바인딩 같은 화면을 구성할 수 있습니다!
 - 전체 html을 업데이트 하는 것이 아닌 값이나 태그가 바뀐 것만 업데이트 합니다.
